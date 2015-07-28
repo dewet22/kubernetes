@@ -15,7 +15,6 @@ Getting started on Google Compute Engine
 - [Troubleshooting](#troubleshooting)
     - [Project settings](#project-settings)
     - [Cluster initialization hang](#cluster-initialization-hang)
-    - [Disk creation fails](#disk-creation-fails)
     - [SSH](#ssh)
     - [Networking](#networking)
 
@@ -172,35 +171,6 @@ Also ensure that-- as listed in the [Prerequsites section](#prerequisites)-- you
 #### Cluster initialization hang
 
 If the Kubernetes startup script hangs waiting for the API to be reachable, you can troubleshoot by SSHing into the master and minion VMs and looking at logs such as `/var/log/startupscript.log`.
-
-**Once you fix the issue, you should run `kube-down.sh` to cleanup** after the partial cluster creation, before running `kube-up.sh` to try again.
-
-#### Disk creation fails
-
-The Kubernetes startup script might fail creating an SSD disk for your master:
-```
-ERROR: (gcloud.compute.disks.create) Some requests did not succeed:
- - The resource 'projects/<<yourproject>>/zones/us-central1-b/diskTypes/pd-ssd' was not found
-```
-
-You can verify which disk types are available for your project using this:
-```
-$ gcloud compute disk-types list
-NAME        ZONE           VALID_DISK_SIZES
-pd-standard europe-west1-d 10GB-10240GB
-pd-standard asia-east1-a   10GB-10240GB
-pd-standard asia-east1-b   10GB-10240GB
-pd-standard asia-east1-c   10GB-10240GB
-pd-standard europe-west1-b 10GB-10240GB
-pd-standard europe-west1-c 10GB-10240GB
-pd-standard us-central1-a  10GB-10240GB
-pd-standard us-central1-c  10GB-10240GB
-pd-standard us-central1-b  10GB-10240GB
-pd-standard us-central1-f  10GB-10240GB
-$
-```
-
-If you see no `pd-ssd` options, it is most likely because you are on the free tier of GCE, possibly using the introductory free credit offering even though you've enabled billing. One fix is to upgrade your account using the link at the top of your Developer Console; if you don't want to do that yet, you can change the configuration to set up your master with a `pd-standard` disk instead by editing `cluster/gce/config-*.sh` and modifying the `MASTER_DISK_TYPE` variable accordingly.
 
 **Once you fix the issue, you should run `kube-down.sh` to cleanup** after the partial cluster creation, before running `kube-up.sh` to try again.
 
